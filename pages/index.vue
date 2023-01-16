@@ -41,10 +41,11 @@ export default {
         navigator.mozGetUserMedia
       if (navigator.getUserMedia) {
         navigator.mediaDevices
-          .getUserMedia({ video: { width: 1280, height: 720 } })
+          .getUserMedia({ video: { width: 854, height: 480 } })
           .then((stream) => {
             console.log(window.innerHeight, window.innerWidth)
             video.srcObject = stream
+            console.log(stream, 'inistream')
             video.width = window.innerWidth
             video.height = window.innerHeight
             let self = this
