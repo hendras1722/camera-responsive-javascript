@@ -1,5 +1,13 @@
 <template>
   <div>
+    <v-text-field
+      v-model="cek"
+      label="Outlined"
+      placeholder="Placeholder"
+      outlined
+      @keypress="handleKeyPress"
+      inputmode="numeric"
+    ></v-text-field>
     <v-row justify="center" align="center">
       <v-col cols="12" sm="8" md="6">
         <div>
@@ -24,10 +32,20 @@ export default {
     return {
       dialog: false,
       openCamera: false,
+      cek: '',
     }
   },
   mounted() {},
   methods: {
+    handleKeyPress(e) {
+      console.log(e, 'inienya')
+      if (!`${e.target.value}${e.key}`.match(/^[0-9]{0,}$/)) {
+        // block the input if result does not match
+        e.preventDefault()
+        e.stopPropagation()
+        return false
+      }
+    },
     handleModal() {
       this.dialog = true
     },
@@ -35,27 +53,23 @@ export default {
       let canvas = document.getElementById('canvas')
       let canvasctx = canvas.getContext('2d')
       let video = document.createElement('video')
-      navigator.getUserMedia =
-        navigator.getUserMedia ||
-        navigator.webkitGetUserMedia ||
-        navigator.mozGetUserMedia
+
       if (navigator.getUserMedia) {
         navigator.mediaDevices
-          .getUserMedia({ video: { width: 854, height: 480 } })
+          .getUserMedia({ video: true })
           .then((stream) => {
-            console.log(window.innerHeight, window.innerWidth)
             video.srcObject = stream
-            console.log(stream, 'inistream')
             video.width = window.innerWidth
             video.height = window.innerHeight
             let self = this
             let count = 0
             video.onloadedmetadata = function (e) {
-              for (let i = 0; i <= 10; i++) {
-                video.play()
-                canvas.width = video.width
-                canvas.height = video.height
-                self.openCamera = true
+              // for (let i = 0; i <= 10; i++) {
+              video.play()
+              self.openCamera = true
+              setInterval(() => {
+                canvas.width = window.innerWidth
+                canvas.height = window.innerHeight
                 canvasctx.drawImage(
                   video,
                   0,
@@ -63,20 +77,21 @@ export default {
                   window.innerWidth,
                   window.innerHeight,
                 )
-                console.log(i, 'ininya')
-                if (i === 10) {
-                  video.remove()
-                  video.srcObject = null
-                  // setTimeout(() => {
-                  self.accessCamera()
-                  // }, 500)
-                }
-                setTimeout(() => {
-                  requestAnimationFrame(() => {
-                    self.accessCamera()
-                  })
-                }, 1000 / 30)
-              }
+              }, 10)
+              // console.log('i', 'ininya')
+              // if (i === 10) {
+              // video.remove()
+              // video.srcObject = null
+              // setTimeout(() => {
+              // self.accessCamera()
+              // }, 500)
+              // }
+              // setTimeout(() => {
+              //   requestAnimationFrame(() => {
+              //     self.accessCamera()
+              //   })
+              // }, 1000 / 20)
+              // }
             }
           })
           .catch((err) => {
